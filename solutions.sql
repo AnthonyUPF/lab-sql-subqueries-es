@@ -21,6 +21,7 @@ where length > (select avg(length) from film);
 
 -- 3. Usa subconsultas para mostrar todos los actores que aparecen en la película Viaje Solo.
 
+
 select a.*
 from actor a
 join film_actor fa on a.actor_id = fa.actor_id
@@ -31,6 +32,7 @@ where fa.film_id = (
 );
 
 -- 4. Las ventas han estado disminuyendo entre las familias jóvenes, y deseas dirigir todas las películas familiares a una promoción. Identifica todas las películas categorizadas como películas familiares.
+
 
 select *
 from film
@@ -61,7 +63,6 @@ where address_id in (
 	)
 );
 
--- 6. ¿Cuáles son las películas protagonizadas por el actor más prolífico? El actor más prolífico se define como el actor que ha actuado en el mayor número de películas. Primero tendrás que encontrar al actor más prolífico y luego usar ese actor_id para encontrar las diferentes películas en las que ha protagonizado.
 
 select c.first_name, c.last_name, c.email
 from customer c
@@ -70,7 +71,7 @@ join city ci on a.city_id = ci.city_id
 join country co on ci.country_id = co.country_id
 where co.country = 'Canada';
 
--- 7. Películas alquiladas por el cliente más rentable. Puedes usar la tabla de clientes y la tabla de pagos para encontrar al cliente más rentable, es decir, el cliente que ha realizado la mayor suma de pagos.
+-- 6. ¿Cuáles son las películas protagonizadas por el actor más prolífico? El actor más prolífico se define como el actor que ha actuado en el mayor número de películas. Primero tendrás que encontrar al actor más prolífico y luego usar ese actor_id para encontrar las diferentes películas en las que ha protagonizado.
 
 select f.title
 from film f
@@ -80,6 +81,20 @@ where fa.actor_id = (
     from film_actor
     group by actor_id
     order by count(*) desc
+    limit 1
+);
+
+-- 7. Películas alquiladas por el cliente más rentable. Puedes usar la tabla de clientes y la tabla de pagos para encontrar al cliente más rentable, es decir, el cliente que ha realizado la mayor suma de pagos.
+
+select film.title
+from film
+join inventory on film.film_id = inventory.film_id
+join rental on inventory.inventory_id = rental.inventory_id
+where rental.customer_id = (
+    select customer_id
+    from payment
+    group by customer_id
+    order by sum(amount) desc
     limit 1
 );
 
@@ -96,3 +111,4 @@ having sum(amount) > (
         group by customer_id
 	) as avg_amount
 );
+
